@@ -1,0 +1,8 @@
+openai
+psycopg2-binary
+feedparser
+requests
+python-dotenv
+pandas
+yfinance
+numpy
