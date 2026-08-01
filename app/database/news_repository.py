@@ -29,6 +29,11 @@ def save_news(news):
 
     conn.commit()
 
+    print("=" * 80)
+    print(news.url)
+    print("ROWCOUNT:", cursor.rowcount)
+    print("=" * 80)
+
     saved = cursor.rowcount > 0
 
     cursor.close()

@@ -3,6 +3,10 @@ import re
 
 import feedparser
 
+from app.database.news_repository import (
+    save_news
+)
+
 from app.models.news import News
 
 from app.models.evidence import (
@@ -70,6 +74,17 @@ class RSSCollector:
                 published_at=published_at
 
             )
+
+            # ------------------------------------------
+            # Skip articles already processed
+            # ------------------------------------------
+
+            saved = save_news(news)
+
+            print(f"{news.title[:50]}... -> {saved}")
+
+            if not saved:
+                continue
 
             evidence = Evidence(
 
