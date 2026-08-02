@@ -1,12 +1,36 @@
 import logging
 import os
+import sys
 
-os.makedirs("logs", exist_ok=True)
-
-logging.basicConfig(
-    filename="logs/scanner.log",
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(message)s"
+os.makedirs(
+    "logs",
+    exist_ok=True
 )
 
-logger = logging.getLogger("CatalystScanner")
+logging.basicConfig(
+
+    level=logging.INFO,
+
+    format=(
+        "%(asctime)s | "
+        "%(levelname)s | "
+        "%(message)s"
+    ),
+
+    handlers=[
+
+        logging.FileHandler(
+            "logs/scanner.log"
+        ),
+
+        logging.StreamHandler(
+            sys.stdout
+        )
+
+    ]
+
+)
+
+logger = logging.getLogger(
+    "CatalystScanner"
+)

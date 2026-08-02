@@ -5,6 +5,18 @@ from app.models.evidence import (
     EvidenceSource
 )
 
+from app.logger.logger import logger
+
+
+IMPORTANT_FORMS = {
+    "8-K",
+    "10-Q",
+    "10-K",
+    "13D",
+    "SC TO",
+    "S-1"
+}
+
 
 class SECCollector:
 
@@ -13,7 +25,16 @@ class SECCollector:
         company
     ):
 
+        logger.info(
+            f"SEC -> {company.ticker}"
+        )
+
         if not company.cik:
+
+            logger.warning(
+                f"{company.ticker} has no CIK"
+            )
+
             return []
 
         cik = str(
@@ -28,7 +49,8 @@ class SECCollector:
         headers = {
 
             "User-Agent": (
-                "CatalystScanner (development)"
+                "CatalystScanner "
+                "(development)"
             )
 
         }
@@ -41,21 +63,18 @@ class SECCollector:
                 timeout=20
             )
 
+            logger.info(
+                f"{company.ticker} -> {response.status_code}"
+            )
+
             if response.status_code != 200:
-
-                print(
-                    f"SEC error "
-                    f"{company.ticker}: "
-                    f"{response.status_code}"
-                )
-
                 return []
 
             data = response.json()
 
         except Exception as e:
 
-            print(
+            logger.error(
                 f"SEC request failed: {e}"
             )
 
@@ -83,6 +102,9 @@ class SECCollector:
             forms,
             dates
         ):
+
+            if form not in IMPORTANT_FORMS:
+                continue
 
             evidence = Evidence(
 
@@ -112,5 +134,9 @@ class SECCollector:
             evidences.append(
                 evidence
             )
+
+        logger.info(
+            f"{company.ticker} SEC evidence: {len(evidences)}"
+        )
 
         return evidences
