@@ -31,7 +31,6 @@ class SECCollector:
     def __init__(self):
 
         self.downloader = SECFilingDownloader()
-
         self.parser = SECFilingParser()
 
     def collect(
@@ -61,12 +60,10 @@ class SECCollector:
         )
 
         headers = {
-
             "User-Agent": (
                 "CatalystScanner "
                 "(development)"
             )
-
         }
 
         try:
@@ -153,12 +150,24 @@ class SECCollector:
                 f"{document}"
             )
 
+            logger.info(
+                f"Filing URL: {filing_url}"
+            )
+
             html = self.downloader.download(
                 filing_url
             )
 
+            logger.info(
+                f"HTML size: {len(html) if html else 0}"
+            )
+
             document_text = self.parser.parse(
                 html
+            )
+
+            logger.info(
+                f"Document size: {len(document_text)}"
             )
 
             evidence = Evidence(
