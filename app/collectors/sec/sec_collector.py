@@ -7,6 +7,14 @@ from app.models.evidence import (
 
 from app.logger.logger import logger
 
+from app.collectors.sec.sec_filing_downloader import (
+    SECFilingDownloader
+)
+
+from app.collectors.sec.sec_filing_parser import (
+    SECFilingParser
+)
+
 
 IMPORTANT_FORMS = {
     "8-K",
@@ -19,6 +27,12 @@ IMPORTANT_FORMS = {
 
 
 class SECCollector:
+
+    def __init__(self):
+
+        self.downloader = SECFilingDownloader()
+
+        self.parser = SECFilingParser()
 
     def collect(
         self,
@@ -139,6 +153,14 @@ class SECCollector:
                 f"{document}"
             )
 
+            html = self.downloader.download(
+                filing_url
+            )
+
+            document_text = self.parser.parse(
+                html
+            )
+
             evidence = Evidence(
 
                 company=company,
@@ -160,7 +182,9 @@ class SECCollector:
 
                 url=filing_url,
 
-                published_at=date
+                published_at=date,
+
+                document_text=document_text
 
             )
 

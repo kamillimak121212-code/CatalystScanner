@@ -1,31 +1,34 @@
-import re
+def parse(
+    self,
+    html
+):
 
-from bs4 import BeautifulSoup
+    raise Exception("PARSER WAS CALLED")
 
+    if not html:
+        return ""
 
-class SECFilingParser:
+    soup = BeautifulSoup(
+        html,
+        "html.parser"
+    )
 
-    def parse(
-        self,
-        html
-    ):
+    text = soup.get_text(
+        separator=" "
+    )
 
-        if not html:
-            return ""
+    text = re.sub(
+        r"\s+",
+        " ",
+        text
+    ).strip()
 
-        soup = BeautifulSoup(
-            html,
-            "html.parser"
-        )
+    logger.info(
+        f"Parsed SEC text length: {len(text)}"
+    )
 
-        text = soup.get_text(
-            separator=" "
-        )
+    logger.info(
+        f"SEC preview: {text[:300]}"
+    )
 
-        text = re.sub(
-            r"\s+",
-            " ",
-            text
-        )
-
-        return text.strip()
+    return text

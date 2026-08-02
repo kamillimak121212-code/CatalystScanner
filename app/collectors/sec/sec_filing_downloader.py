@@ -27,6 +27,10 @@ class SECFilingDownloader:
                 timeout=30
             )
 
+            logger.info(
+                f"Download status: {response.status_code}"
+            )
+
             if response.status_code != 200:
 
                 logger.warning(
@@ -34,6 +38,10 @@ class SECFilingDownloader:
                 )
 
                 return None
+
+            logger.info(
+                f"Downloaded {len(response.text)} characters"
+            )
 
             return response.text
 

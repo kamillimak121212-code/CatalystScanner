@@ -29,7 +29,8 @@ class Evidence:
         relevance,
         importance,
         url,
-        published_at
+        published_at,
+        document_text=None
     ):
 
         self.company = company
@@ -41,6 +42,9 @@ class Evidence:
         self.importance = importance
         self.url = url
         self.published_at = published_at
+
+        # Full document (SEC, FDA, Earnings itp.)
+        self.document_text = document_text
 
         # AI
         self.understanding = None
@@ -56,7 +60,7 @@ class Evidence:
             f"{self.category}\n"
             f"{self.title}\n"
             f"Relevance: {self.relevance}%\n"
-            f"Importance: {self.importance.name}\n"
+            f"Importance: {self.importance.name if self.importance else 'None'}\n"
             f"Signals: {len(self.signals)}\n"
             f"{self.published_at}"
         )
