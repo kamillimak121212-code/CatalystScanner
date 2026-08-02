@@ -5,6 +5,10 @@ from app.collectors.rss.rss_collector import (
     RSSCollector
 )
 
+from app.collectors.sec.sec_collector import (
+    SECCollector
+)
+
 from app.pipeline.evidence_pipeline import (
     EvidencePipeline
 )
@@ -35,6 +39,8 @@ class ScannerService:
         self.watchlist = WatchlistService()
 
         self.rss = RSSCollector()
+
+        self.sec = SECCollector()
 
         self.queue = EventQueue()
 
@@ -84,16 +90,28 @@ class ScannerService:
             )
             print("=" * 100)
 
-            evidences = self.rss.collect(
+            rss_evidences = self.rss.collect(
                 company
             )
 
             print(
-                f"Evidence found: {len(evidences)}"
+                f"RSS evidence: {len(rss_evidences)}"
             )
 
             self.queue.add_all(
-                evidences
+                rss_evidences
+            )
+
+            sec_evidences = self.sec.collect(
+                company
+            )
+
+            print(
+                f"SEC evidence: {len(sec_evidences)}"
+            )
+
+            self.queue.add_all(
+                sec_evidences
             )
 
         # --------------------------------------------------
