@@ -17,6 +17,10 @@ from app.history.history_repository import (
     HistoryRepository
 )
 
+from app.queue.event_queue import (
+    EventQueue
+)
+
 from app.services.watchlist_service import (
     WatchlistService
 )
@@ -31,6 +35,8 @@ class ScannerService:
         self.watchlist = WatchlistService()
 
         self.rss = RSSCollector()
+
+        self.queue = EventQueue()
 
         self.history_builder = HistoryBuilder()
 
@@ -63,6 +69,12 @@ class ScannerService:
             f"Loaded {len(companies)} active companies"
         )
 
+        # --------------------------------------------------
+        # Collect events
+        # --------------------------------------------------
+
+        self.queue.clear()
+
         for company in companies:
 
             print()
@@ -80,46 +92,63 @@ class ScannerService:
                 f"Evidence found: {len(evidences)}"
             )
 
-            futures = []
+            self.queue.add_all(
+                evidences
+            )
 
-            with ThreadPoolExecutor(
-                max_workers=5
-            ) as executor:
+        # --------------------------------------------------
+        # Process queue
+        # --------------------------------------------------
 
-                for evidence in evidences:
+        print()
+        print("=" * 100)
+        print(
+            f"PROCESSING {len(self.queue)} EVENTS"
+        )
+        print("=" * 100)
 
-                    futures.append(
+        futures = []
 
-                        executor.submit(
-                            self.process_evidence,
-                            evidence
-                        )
+        with ThreadPoolExecutor(
+            max_workers=5
+        ) as executor:
 
+            for evidence in self.queue.get_all():
+
+                futures.append(
+
+                    executor.submit(
+                        self.process_evidence,
+                        evidence
                     )
 
-                for future in as_completed(
-                    futures
-                ):
+                )
 
-                    try:
+            for future in as_completed(
+                futures
+            ):
 
-                        result, elapsed = (
-                            future.result()
-                        )
+                try:
 
-                        print(
-                            f"\nPipeline time: {elapsed:.2f}s"
-                        )
+                    result, elapsed = (
+                        future.result()
+                    )
 
-                        self.print_report(
-                            result
-                        )
+                    print(
+                        f"\nPipeline time: {elapsed:.2f}s"
+                    )
 
-                    except Exception as e:
+                    self.print_report(
+                        result
+                    )
 
-                        print(
-                            f"Pipeline error: {e}"
-                        )
+                except Exception as e:
+
+                    print(
+                        f"Pipeline error: {e}"
+                    )
+
+        self.queue.clear()
 
     def print_report(
         self,
