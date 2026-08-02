@@ -41,7 +41,7 @@ class SECCollector:
             company.cik
         ).zfill(10)
 
-        url = (
+        submissions_url = (
             f"https://data.sec.gov/submissions/"
             f"CIK{cik}.json"
         )
@@ -58,7 +58,7 @@ class SECCollector:
         try:
 
             response = requests.get(
-                url,
+                submissions_url,
                 headers=headers,
                 timeout=20
             )
@@ -80,31 +80,64 @@ class SECCollector:
 
             return []
 
-        filings = (
+        recent = (
             data
             .get("filings", {})
             .get("recent", {})
         )
 
-        forms = filings.get(
+        forms = recent.get(
             "form",
             []
         )
 
-        dates = filings.get(
+        dates = recent.get(
             "filingDate",
+            []
+        )
+
+        accession_numbers = recent.get(
+            "accessionNumber",
+            []
+        )
+
+        primary_documents = recent.get(
+            "primaryDocument",
             []
         )
 
         evidences = []
 
-        for form, date in zip(
+        for (
+            form,
+            date,
+            accession,
+            document
+        ) in zip(
+
             forms,
-            dates
+            dates,
+            accession_numbers,
+            primary_documents
+
         ):
 
             if form not in IMPORTANT_FORMS:
                 continue
+
+            accession_no_dash = (
+                accession.replace(
+                    "-",
+                    ""
+                )
+            )
+
+            filing_url = (
+                "https://www.sec.gov/Archives/edgar/data/"
+                f"{int(company.cik)}/"
+                f"{accession_no_dash}/"
+                f"{document}"
+            )
 
             evidence = Evidence(
 
@@ -125,7 +158,7 @@ class SECCollector:
 
                 importance=None,
 
-                url=url,
+                url=filing_url,
 
                 published_at=date
 

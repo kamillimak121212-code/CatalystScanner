@@ -1,0 +1,46 @@
+import requests
+
+from app.logger.logger import logger
+
+
+class SECFilingDownloader:
+
+    def download(
+        self,
+        url
+    ):
+
+        headers = {
+
+            "User-Agent": (
+                "CatalystScanner "
+                "(development)"
+            )
+
+        }
+
+        try:
+
+            response = requests.get(
+                url,
+                headers=headers,
+                timeout=30
+            )
+
+            if response.status_code != 200:
+
+                logger.warning(
+                    f"Cannot download filing: {url}"
+                )
+
+                return None
+
+            return response.text
+
+        except Exception as e:
+
+            logger.error(
+                f"Download failed: {e}"
+            )
+
+            return None
