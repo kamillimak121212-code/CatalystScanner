@@ -2,15 +2,15 @@ import hashlib
 
 
 def create_news_hash(
-    company,
     title,
-    description
+    summary,
+    url
 ):
 
     text = (
-        f"{company.ticker}|"
         f"{title}|"
-        f"{description}"
+        f"{summary}|"
+        f"{url}"
     ).lower()
 
     return hashlib.sha256(

@@ -5,15 +5,15 @@ class NewsHashService:
 
     def create(
         self,
-        evidence
+        news
     ):
 
         return create_news_hash(
 
-            evidence.company,
+            news.title,
 
-            evidence.title,
+            news.summary,
 
-            evidence.description
+            news.url
 
         )
