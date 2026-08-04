@@ -142,6 +142,33 @@ def create_tables():
         );
     """)
 
+    # --------------------------------------------------
+    # SEC Filings
+    # --------------------------------------------------
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS sec_filings (
+
+            id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+            company_id INTEGER NOT NULL,
+
+            accession_number VARCHAR(50) UNIQUE NOT NULL,
+
+            form VARCHAR(20) NOT NULL,
+
+            filing_date DATE NOT NULL,
+
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+            CONSTRAINT fk_sec_company
+                FOREIGN KEY (company_id)
+                REFERENCES companies(id)
+                ON DELETE CASCADE
+
+        );
+    """)
+
     conn.commit()
 
     cursor.close()
