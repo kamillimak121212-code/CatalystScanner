@@ -1,3 +1,5 @@
+import time
+
 import requests
 
 from app.logger.logger import logger
@@ -14,12 +16,14 @@ class SECFilingDownloader:
 
             "User-Agent": (
                 "CatalystScanner "
-                "(development)"
+                "(kamillimak121212@gmail.com)"
             )
 
         }
 
         try:
+
+            time.sleep(0.2)
 
             response = requests.get(
                 url,
