@@ -122,6 +122,10 @@ class SECCollector:
             []
         )
 
+        logger.info(
+            f"Found {len(forms)} SEC filings"
+        )
+
         evidences = []
 
         for (
@@ -138,7 +142,16 @@ class SECCollector:
 
         ):
 
+            logger.info(
+                f"FORM: {form}"
+            )
+
             if form not in IMPORTANT_FORMS:
+
+                logger.info(
+                    f"SKIPPED FORM: {form}"
+                )
+
                 continue
 
             accession_no_dash = accession.replace(
@@ -146,9 +159,18 @@ class SECCollector:
                 ""
             )
 
+            logger.info(
+                f"ACCESSION: {accession_no_dash}"
+            )
+
             if self.repository.exists(
                 accession_no_dash
             ):
+
+                logger.info(
+                    f"ALREADY EXISTS: {accession_no_dash}"
+                )
+
                 continue
 
             filing_url = (
