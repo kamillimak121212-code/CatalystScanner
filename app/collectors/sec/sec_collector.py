@@ -15,6 +15,10 @@ from app.collectors.sec.sec_filing_parser import (
     SECFilingParser
 )
 
+from app.database.sec_filing_repository import (
+    SECFilingRepository
+)
+
 
 IMPORTANT_FORMS = {
     "8-K",
@@ -32,6 +36,7 @@ class SECCollector:
 
         self.downloader = SECFilingDownloader()
         self.parser = SECFilingParser()
+        self.repository = SECFilingRepository()
 
     def collect(
         self,
@@ -62,7 +67,7 @@ class SECCollector:
         headers = {
             "User-Agent": (
                 "CatalystScanner "
-                "(development)"
+                "(kamillimak121212@gmail.com)"
             )
         }
 
@@ -136,12 +141,15 @@ class SECCollector:
             if form not in IMPORTANT_FORMS:
                 continue
 
-            accession_no_dash = (
-                accession.replace(
-                    "-",
-                    ""
-                )
+            accession_no_dash = accession.replace(
+                "-",
+                ""
             )
+
+            if self.repository.exists(
+                accession_no_dash
+            ):
+                continue
 
             filing_url = (
                 "https://www.sec.gov/Archives/edgar/data/"
@@ -194,6 +202,18 @@ class SECCollector:
                 published_at=date,
 
                 document_text=document_text
+
+            )
+
+            self.repository.save(
+
+                company,
+
+                accession_no_dash,
+
+                form,
+
+                date
 
             )
 
