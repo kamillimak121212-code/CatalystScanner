@@ -24,10 +24,28 @@ def test_connection():
 
         conn = get_connection()
 
-        print("✅ Connected successfully!")
+        with conn.cursor() as cur:
+
+            cur.execute("""
+                SELECT
+                    current_database(),
+                    current_schema(),
+                    current_user,
+                    version();
+            """)
+
+            print(cur.fetchone())
+
+            cur.execute("""
+                SELECT table_schema, table_name
+                FROM information_schema.tables
+                WHERE table_name = 'sec_filings';
+            """)
+
+            print(cur.fetchall())
 
         conn.close()
 
     except Exception as e:
 
-        print(f"❌ Connection failed: {e}")
+        print(e)

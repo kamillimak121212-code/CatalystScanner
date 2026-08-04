@@ -1,4 +1,8 @@
 from app.database.connection import test_connection
+
+test_connection()
+
+from app.database.connection import test_connection
 from app.database.schema import create_tables
 from app.database.company_repository import (
     get_all_companies
