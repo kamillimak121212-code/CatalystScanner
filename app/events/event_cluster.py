@@ -1,0 +1,3 @@
+class EventCluster:
+
+    pass

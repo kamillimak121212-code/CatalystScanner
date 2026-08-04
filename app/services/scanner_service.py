@@ -29,6 +29,10 @@ from app.services.watchlist_service import (
     WatchlistService
 )
 
+from app.events.event_service import (
+    EventService
+)
+
 from app.logger.logger import logger
 
 
@@ -48,6 +52,8 @@ class ScannerService:
 
         self.history_repository = HistoryRepository()
 
+        self.event_service = EventService()
+
     def process_evidence(
         self,
         evidence
@@ -59,6 +65,10 @@ class ScannerService:
 
         result = pipeline.process(
             evidence
+        )
+
+        result.event = self.event_service.process(
+            result.evidence
         )
 
         elapsed = (
